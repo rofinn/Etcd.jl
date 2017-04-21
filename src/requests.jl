@@ -4,9 +4,9 @@ end
 
 response(err::HTTPError) = err.resp
 
-function showerror(io::IO, err::HTTPError)
-    msg = readstring(resp)
-    println("HTTPError: $msg")
+function Base.showerror(io::IO, err::HTTPError)
+    msg = readstring(err.resp)
+    println(io, "HTTPError: $msg")
 end
 
 immutable EtcdError <: Exception
@@ -15,7 +15,7 @@ end
 
 response(err::EtcdError) = err.resp
 
-function showerror(io::IO, err::EtcdError)
+function Base.showerror(io::IO, err::EtcdError)
     err_code = err.resp["errorCode"]
     msg = get(err.resp, "message", "Unknown error")
     println(io, "EtcdError: $msg ($err_code).")
