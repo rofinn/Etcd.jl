@@ -3,10 +3,10 @@
 **[Using Etcd Client](#using-etcd-client)**
 
 # Etcd.jl
-[![stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Rory-Finnegan.github.io/Etcd.jl/stable/)
-[![latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://Rory-Finnegan.github.io/Etcd.jl/latest/)
-[![Build Status](https://travis-ci.org/Rory-Finnegan/Etcd.jl.svg?branch=master)](https://travis-ci.org/Rory-Finnegan/Etcd.jl)
-[![codecov](https://codecov.io/gh/Rory-Finnegan/Etcd.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/Rory-Finnegan/Etcd.jl)
+[![stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://rofinn.github.io/Etcd.jl/stable/)
+[![latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://rofinn.github.io/Etcd.jl/latest/)
+[![Build Status](https://travis-ci.org/rofinn/Etcd.jl.svg?branch=master)](https://travis-ci.org/rofinn/Etcd.jl)
+[![codecov](https://codecov.io/gh/rofinn/Etcd.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/rofinn/Etcd.jl)
 
 A Julia [Etcd](https://github.com/coreos/etcd) client implementation.
 
