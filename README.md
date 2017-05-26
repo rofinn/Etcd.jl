@@ -173,7 +173,7 @@ To continuously watch a key:
 
 ```julia
 julia> t = watchloop(cli, "/foo/bar"; recursive=true) do resp
-    foo(resp)
+    # Run some code with response
 end
 ```
 
@@ -182,8 +182,8 @@ A termination condition (a `Function` which takes the etcd response and returns 
 ```julia
 julia> predicate(r) = r["node"]["modifiedIndex"] > 5
 
-julia> t = watchloop(cli, "/foo", predicate; recursive=true) do
-    bar(resp)
+julia> t = watchloop(cli, "/foo", predicate; recursive=true) do resp
+    # Run some code with response
 end
 ```
 
