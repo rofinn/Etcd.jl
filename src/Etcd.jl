@@ -34,6 +34,8 @@ export
     createdir,
     updatedir,
     delete,
+    deletedir,
+    exists,
     cas,
     cad,
     watch,
