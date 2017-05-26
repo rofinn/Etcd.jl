@@ -9,11 +9,15 @@
 [![codecov](https://codecov.io/gh/rofinn/Etcd.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/rofinn/Etcd.jl)
 
 A Julia [Etcd](https://github.com/coreos/etcd) client implementation.
+This client wraps the [etcd-v2 REST api](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md).
+Responses from the etcd server containing valid json are parsed into julia `Dict`s and `Array`s, while a `String` representation is returned for all other successful HTTP requests.
+For a detailed summary of the etcd responses please review the [etcd api documentation](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md).
 
 ## Quickstart
 
 ```julia
 julia> Pkg.add("Etcd")
+
 julia> using Etcd
 ```
 
@@ -23,7 +27,7 @@ The library defaults to Etcd server at 127.0.0.1:2379.
 
 
 ```julia
-cli = Etcd.connect("127.0.0.1", 2379,"v2")
+cli = Etcd.connect("127.0.0.1", 2379, "v2")
 ```
 
 Or you can specify the server ip address and port number.
@@ -156,15 +160,31 @@ julia> cad(cli, "/foo/bar", prev_index=1849)
 
 #### Watching for changes
 
+You can also create asynchronous watch routines with `watch` or `watchloop`.
+These methods will return the executed watch `Task`.
+
 Watch for only the next change on a key:
 
 ```julia
-julia> watch(ev->println("I'm watching you:", ev), cli, "/foo/bar")
-Task (queued) @0x00000000024b65f0
-...
-... next make some modification to "/foo/bar" key and the callback is then called:
-...
-I'm watching you:["action"=>"update","prevNode"=>["createdIndex"=>1851,"key"=>"/foo/bar","value"=>"Hello World","modifiedIndex"=>1851],"node"=>["createdIndex"=>1851,"key"=>"/foo/bar","value"=>"Who's watching the watchers","modifiedIndex"=>1852]]
+julia> t = watch(resp -> println("I'm watching you: $resp"), cli, "/foo/bar")
+```
+
+To continuously watch a key:
+
+```julia
+julia> t = watchloop(cli, "/foo/bar"; recursive=true) do resp
+    foo(resp)
+end
+```
+
+A termination condition (a `Function` which takes the etcd response and returns a `Bool`) can be used to exit the watch loop:
+
+```julia
+julia> predicate(r) = r["node"]["modifiedIndex"] > 5
+
+julia> t = watchloop(cli, "/foo", predicate; recursive=true) do
+    bar(resp)
+end
 ```
 
 You can also specify the following options:
@@ -172,80 +192,24 @@ You can also specify the following options:
 - `recursive=true` to watch the key and all it's children.
 - `wait_index` to watch starting with the provided index.
 
-Continuously watch a key:
 
-```julia
-julia> Etcd.keep_watching(etcd,"/foo/bar",ev->println("I'll keep on watching you:",ev))
-.... The callback will keep getting called for every change to the key
-```
-
-Watch conditionally, while passing a function which will terminate the watch when it evaluates to `true`, for example:
-
-```julia
-julia> Etcd.watch_until(etcd,"/foo",ev->println("I'll be watching you (only 3 times):",ev),begin let l = 0; ev->begin l += 1; if l > 2 true else false end end end end,recursive=true)
-```
-
-## The below documentation is out of date!
-
-#### Getting Etcd stats
+#### Getting cluster information
 
 You can retrieve Etcd stats by specifying one of `store`, `self` or `leader`.
 
 For example to get the `store` stats:
 
 ```julia
-julia> Etcd.stats(etcd,"store")
-["getsSuccess"=>193,"updateFail"=>88,"watchers"=>1,"setsSuccess"=>710,"setsFail"=>2869,"expireCount"=>460,"compareAndSwapSuccess"=>3,"getsFail"=>10,"deleteSuccess"=>8,"createFail"=>10,"createSuccess"=>25,"compareAndDeleteSuccess"=>3,"deleteFail"=>3,"compareAndSwapFail"=>1,"updateSuccess"=>386,"compareAndDeleteFail"=>0]
+julia> stats(etcd, "store")
 ```
 
-#### Leader/Election module
-
-Set a leader for the cluster (notice the leading slash is omitted) by specifying a name and a ttl as follows:
+You can also get the current leader with:
 
 ```julia
-julia> Etcd.set_leader(etcd,"my-cluster",name="leader-1",ttl=60)
-"1853"
+julia> leader(etcd)
 ```
 
-Get the leader of the cluster:
-
+or a list of members with:
 ```julia
-julia> Etcd.get_leader(etcd,"my-cluster")
-"leader-1"
-```
-
-Deleting the leader:
-
-```julia
-julia> Etcd.delete_leader(etcd,"my-cluster",name="leader-1")
-""
-```
-
-#### Locking module
-
-The lock module can be used to provide a distributed lock for resources among multiple clients. Only one client can have access to the lock at a time, once the lock holder releases the lock the next client waiting for the lock can acquire it.
-
-`lock_retrieve` gets the lock index of the lock. `lock_acquire` is used to acquire the lock and it will return the lock index.
-
-```julia
-... another client acquires the lock
-$ curl -L http://127.0.0.1:4001/mod/v2/lock/mylock -XPOST -d ttl=100
-1876
-julia> Etcd.lock_retrieve(etcd,"mylock")
-"1876"
-julia> Etcd.lock_acquire(etcd,"mylock",ttl=100)
-... blocks until ttl for lock expires or until lock is released ...
-"1878"
-```
-
-You can also renew the lock:
-
-```julia
-julia> Etcd.lock_renew(etcd,"mylock",index=1885,ttl=60)
-```
-
-And release the lock:
-
-```julia
-julia> Etcd.lock_release(etcd,"mylock",index=1890)
+julia> members(etcd)
 ```
