@@ -96,7 +96,7 @@ function cad(
     prev_value::Union{String, Void}=nothing, prev_index::Int=-1,
 )
     opts = Dict{String, Any}()
-    if !is(prev_value, nothing)
+    if prev_value !== nothing
        opts["prevValue"] = prev_value
     end
 
@@ -113,7 +113,7 @@ function cas(
 )
     opts = Dict{String, Any}("value" => value)
 
-    if !is(prev_value, nothing)
+    if prev_value !== nothing
        opts["prevValue"] = prev_value
     end
 

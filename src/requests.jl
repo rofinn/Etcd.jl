@@ -23,11 +23,17 @@ end
 
 function request(f::Function, uri::String, opts::Dict; n=5, max_delay=10.0)
     retry_cond(resp) = in(statuscode(resp), 300:400) && haskey(resp.headers, "Location")
+    retry_func() = isempty(opts) ? f(uri) : f(uri; query=opts)
 
-    resp = if isempty(opts)
-        retry(() -> f(uri), retry_cond; n=n, max_delay=max_delay)()
+
+    resp = @static if VERSION < v"0.6.0-dev.2042"
+        retry(retry_func, retry_cond; n=n, max_delay=max_delay)()
     else
-        retry(() -> f(uri; query=opts), retry_cond; n=n, max_delay=max_delay)()
+        retry(
+            retry_func;
+            delays=Base.ExponentialBackOff(n=n, max_delay=max_delay),
+            check=retry_cond
+        )()
     end
 
     data = try
