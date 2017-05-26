@@ -1,3 +1,8 @@
+"""
+    install(force=true)
+
+Downloads and installs a local etcd server (mostly for testing).
+"""
 function install(force=true)
     if !isempty(ETCD_DOWNLOAD_URI)
         if !ispath(ETCD_SRC_PATH)
@@ -14,6 +19,13 @@ function install(force=true)
     end
 end
 
+"""
+    start(timeout=-1) -> Future
+
+Starts up the local etcd server (mostly for testing).
+The `timeout` specifies a number of seconds to run the server for
+(using `timeout` or `gtimeout`).
+"""
 function start(timeout=-1)
     if !ispath(ETCD_DEST_PATH)
         install()

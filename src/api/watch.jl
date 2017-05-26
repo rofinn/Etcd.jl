@@ -1,7 +1,12 @@
-function watch(
-    f::Function, cli::Client, key::String;
-    wait_index::Int=-1, recursive::Bool=false
-)
+"""
+    watch(f, cli, key; wait_index=-1, recursive=false)
+
+Creates an asynchronous `Task` which watches the `key` on the etcd cluster and runs
+function `f` on the response.
+
+Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#waiting-for-a-change
+"""
+function watch(f::Function, cli::Client, key::String; wait_index::Int=-1, recursive::Bool=false)
     t = @async begin
         opts = Dict{String, Any}("wait" => true)
 
@@ -20,6 +25,15 @@ function watch(
     return t
 end
 
+"""
+    watchloop(f, cli, key, [p]; wait_index=-1, recursive=false)
+
+Creates an asynchrous `Task` which continously watches the `key` on the etcd cluster and
+runs function `f` on the response.
+The predicate function `p` represents a termination condition to exit the loop.
+
+Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#waiting-for-a-change
+"""
 function watchloop(
     f::Function, cli::Client, key::String, p::Function=(resp) -> false;
     wait_index::Int=-1, recursive::Bool=false

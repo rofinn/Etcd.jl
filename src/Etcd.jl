@@ -14,9 +14,12 @@ include("requests.jl")
 include("api.jl")
 include("utils.jl")
 
-function connect(host::String="localhost", port::Int=2379, version="v2")
-    return Client(host, port, version)
-end
+"""
+    connect(host="localhost", port=2379, version="v2")
+
+Creates an `Etcd.Client` which can then be used for making requests to an etcd cluster.
+"""
+connect(host::String="localhost", port::Int=2379, version="v2") = Client(host, port, version)
 
 export
     # methods
@@ -35,7 +38,6 @@ export
     cad,
     watch,
     watchloop,
-    watchuntil,
 
     # Types
     HTTPError,
