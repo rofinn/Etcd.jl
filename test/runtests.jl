@@ -2,8 +2,8 @@ using Base.Test
 using Etcd
 
 info("Starting etcd server...")
-const timeout = 600     # A longer timeout for travis testing
-# const timeout = 60    # More reasonable local timeout
+# const timeout = 600     # A longer timeout for travis testing
+const timeout = 60    # More reasonable local timeout
 const server = Etcd.start(timeout)  # Start server with timeout of 60 sec
 const host = "localhost"
 const port = 2379
@@ -232,66 +232,70 @@ const version = "v2"
             end
 
             @testset "watch" begin
-                c = Channel{Dict}(32)
-                set_resp = set(cli, "/mykey", "myvalue"; ttl=2)
-                idx = set_resp["node"]["modifiedIndex"] + 1
+                @testset "Basic" begin
+                    c = Channel{Dict}(32)
+                    set_resp = set(cli, "/mykey", "myvalue"; ttl=2)
+                    idx = set_resp["node"]["modifiedIndex"] + 1
 
-                t = watch(cli, "/mykey"; wait_index=idx, recursive=true) do resp
-                    put!(c, resp)
-                end
+                    t = watch(cli, "/mykey"; wait_index=idx, recursive=true) do resp
+                        put!(c, resp)
+                    end
 
-                set_resp = set(cli, "/mykey", "newvalue"; ttl=2)
-                wait(t)
-                c_resp = take!(c)
-                @test set_resp == c_resp || c_resp["action"] == "expire"
-
-                sleep(2)
-            end
-
-            @testset "watchloop" begin
-                c = Channel{Dict}(32)
-
-                t = watchloop(cli, "/mykey"; recursive=true) do resp
-                    put!(c, resp)
-                end
-
-                set_resp = set(cli, "/mykey", "val1"; ttl=1)
-                c_resp = take!(c)
-                @test set_resp == c_resp || c_resp["action"] == "expire"
-                set_resp = set(cli, "/mykey", "val2"; ttl=1)
-                c_resp = take!(c)
-                @test set_resp == c_resp || c_resp["action"] == "expire"
-                try
-                    schedule(t, InterruptException(); error=true)
+                    set_resp = set(cli, "/mykey", "newvalue"; ttl=2)
                     wait(t)
-                end
-
-                sleep(2)
-            end
-
-            @testset "watchuntil" begin
-                c = Channel{Dict}(32)
-                set_resp = set(cli, "/mykey", "val1"; ttl=2)
-                idx = set_resp["node"]["modifiedIndex"] + 1
-                predicate(r) = r["node"]["modifiedIndex"] > 5
-
-                t = watchuntil(cli, "/mykey", predicate; wait_index=idx, recursive=true) do resp
-                    put!(c, resp)
-                end
-
-                i = 2
-                set_resp = set(cli, "/mykey", "val$i"; ttl=1)
-                sleep(0.2)
-                while isready(c)
                     c_resp = take!(c)
                     @test set_resp == c_resp || c_resp["action"] == "expire"
-                    i += 1
-                    set_resp = set(cli, "/mykey", "val$i"; ttl=1)
-                    sleep(0.2)
+
+                    sleep(2)
                 end
 
-                wait(t)
-                sleep(2)
+                @testset "Loop" begin
+                    @testset "Infinite" begin
+                        c = Channel{Dict}(32)
+
+                        t = watchloop(cli, "/mykey"; recursive=true) do resp
+                            put!(c, resp)
+                        end
+
+                        set_resp = set(cli, "/mykey", "val1"; ttl=1)
+                        c_resp = take!(c)
+                        @test set_resp == c_resp || c_resp["action"] == "expire"
+                        set_resp = set(cli, "/mykey", "val2"; ttl=1)
+                        c_resp = take!(c)
+                        @test set_resp == c_resp || c_resp["action"] == "expire"
+                        try
+                            schedule(t, InterruptException(); error=true)
+                            wait(t)
+                        end
+
+                        sleep(2)
+                    end
+
+                    @testset "Predicate" begin
+                        c = Channel{Dict}(32)
+                        set_resp = set(cli, "/mykey", "val1"; ttl=2)
+                        idx = set_resp["node"]["modifiedIndex"] + 1
+                        predicate(r) = r["node"]["modifiedIndex"] > 5
+
+                        t = watchloop(cli, "/mykey", predicate; wait_index=idx, recursive=true) do resp
+                            put!(c, resp)
+                        end
+
+                        i = 2
+                        set_resp = set(cli, "/mykey", "val$i"; ttl=1)
+                        sleep(0.2)
+                        while isready(c)
+                            c_resp = take!(c)
+                            @test set_resp == c_resp || c_resp["action"] == "expire"
+                            i += 1
+                            set_resp = set(cli, "/mykey", "val$i"; ttl=1)
+                            sleep(0.2)
+                        end
+
+                        wait(t)
+                        sleep(2)
+                    end
+                end
             end
         end
     end
