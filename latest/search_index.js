@@ -13,7 +13,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Etcd.jl",
     "category": "section",
-    "text": "(Image: stable) (Image: latest) (Image: Build Status) (Image: codecov)A Julia Etcd client implementation. This client wraps the etcd-v2 REST api. Responses from the etcd server containing valid json are parsed into julia Dicts and Arrays, while a String representation is returned for all other successful HTTP requests. For a detailed summary of the etcd responses please review the etcd api documentation."
+    "text": "(Image: stable) (Image: latest) (Image: Build Status) (Image: codecov)A Julia Etcd client for the etcd-v2 REST api.NOTE: Responses from the etcd server containing valid json are parsed into julia Dicts and Arrays, while a String representation is returned for all other successful HTTP requests. For a detailed summary of the etcd responses please review the etcd api documentation."
 },
 
 {
@@ -89,6 +89,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#Logging-1",
+    "page": "Home",
+    "title": "Logging",
+    "category": "section",
+    "text": "To aid development and debugging Etcd supports Memento logging of HTTP response bodies.To get etcd HTTP debug logs run:julia> using Memento\n\njulia> Memento.config(\"debug\"; fmt=\"[{level}] {msg}\")\nLogger(root)\n\njulia> set(cli, \"/foo/bar\", \"Hello World\")\n[debug] {\"action\":\"set\",\"node\":{\"key\":\"/foo/bar\",\"value\":\"Hello World\",\"modifiedIndex\":4,\"createdIndex\":4}}"
+},
+
+{
     "location": "api.html#",
     "page": "API",
     "title": "API",
@@ -109,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Base.get",
     "category": "Method",
-    "text": "get(cli, key, sort=false, recursive=false) -> Dict\n\nFetches a value from the specified key from the etcd cluster.\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#get-the-value-of-a-key\n\n\n\n"
+    "text": "get(cli, key, sort=false, recursive=false) -> Dict\n\nFetches the value for the specified key from the etcd cluster. See the etcd API for more details.\n\n\n\n"
 },
 
 {
@@ -117,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Etcd.cad",
     "category": "Method",
-    "text": "cad(cli, key; prev_value=nothing, prev_index=-1) -> Dict\n\nPerforms an atomic compare-and-delete on the key in the etcd cluster.\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#atomic-compare-and-delete\n\n\n\n"
+    "text": "cad(cli, key; prev_value=nothing, prev_index=-1) -> Dict\n\nPerforms an atomic compare-and-delete on the key in the etcd cluster. See the etcd API for more details.\n\n\n\n"
 },
 
 {
@@ -125,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Etcd.cas",
     "category": "Method",
-    "text": "cas(cli, key, value; prev_value=nothing, prev_index=-1, ttl=-1) -> Dict\n\nPerforms an atomic compare-and-swap with the key and value on the etcd cluster.\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#atomic-compare-and-swap\n\n\n\n"
+    "text": "cas(cli, key, value; prev_value=nothing, prev_index=-1, ttl=-1) -> Dict\n\nPerforms an atomic compare-and-swap with the key and value on the etcd cluster. See the etcd API for more details.\n\n\n\n"
 },
 
 {
@@ -173,7 +181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Etcd.set",
     "category": "Method",
-    "text": "set(cli, key, value; ttl=-1, ordered=false) -> Dict\n\nSets the value for the specified key in the etcd cluster.\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#changing-the-value-of-a-key\n\n\n\n"
+    "text": "set(cli, key, value; ttl=-1, ordered=false) -> Dict\n\nSets the value for the specified key in the etcd cluster. See the etcd API for more details.\n\n\n\n"
 },
 
 {
@@ -205,7 +213,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Etcd.watch",
     "category": "Method",
-    "text": "watch(f, cli, key; wait_index=-1, recursive=false)\n\nCreates an asynchronous Task which watches the key on the etcd cluster and runs function f on the response.\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#waiting-for-a-change\n\n\n\n"
+    "text": "watch(f, cli, key; wait_index=-1, recursive=false)\n\nCreates an asynchronous Task which watches the key on the etcd cluster and runs function f on the response. See the etcd API for more details.\n\n\n\n"
 },
 
 {
@@ -213,7 +221,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Etcd.watchloop",
     "category": "Function",
-    "text": "watchloop(f, cli, key, [p]; wait_index=-1, recursive=false)\n\nCreates an asynchrous Task which continously watches the key on the etcd cluster and runs function f on the response. The predicate function p represents a termination condition to exit the loop.\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#waiting-for-a-change\n\n\n\n"
+    "text": "watchloop(f, cli, key, [p]; wait_index=-1, recursive=false)\n\nCreates an asynchrous Task which continously watches the key on the etcd cluster and runs function f on the response. The predicate function p represents a termination condition to exit the loop. See the etcd API for more details.\n\n\n\n"
 },
 
 {
@@ -229,7 +237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Etcd.stats",
     "category": "Method",
-    "text": "stats(cli, stats_type) -> Dict\n\nFetches any stats from the cluster (stats_type may be \"store\", \"self\" or \"leader\")\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#statistics\n\n\n\n"
+    "text": "stats(cli, stats_type) -> Dict\n\nFetches any stats from the cluster (stats_type may be \"store\", \"self\" or \"leader\") See the etcd API for more details.\n\n\n\n"
 },
 
 {
@@ -237,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Etcd.leader",
     "category": "Method",
-    "text": "leader(cli) -> Dict\n\nFetchers the stats for the leader of the etcd cluster.\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#leader-statistics\n\n\n\n"
+    "text": "leader(cli) -> Dict\n\nFetchers the stats for the leader of the etcd cluster. See the etcd API for more details.\n\n\n\n"
 },
 
 {
@@ -245,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Etcd.members",
     "category": "Method",
-    "text": "members(cli) -> Dict\n\nReturns a dict (id, member) of members in the etcd cluster.\n\nReference: https://github.com/coreos/etcd/blob/master/Documentation/v2/members_api.md#list-members\n\n\n\n"
+    "text": "members(cli) -> Dict\n\nReturns a dict (id, member) of members in the etcd cluster. See the etcd API for more details.\n\n\n\n"
 },
 
 {
