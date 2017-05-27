@@ -6,6 +6,7 @@ Downloads and installs a local etcd server (mostly for testing).
 function install(force=true)
     if !isempty(ETCD_DOWNLOAD_URI)
         if !ispath(ETCD_SRC_PATH)
+            info(get_logger(current_module()), "Downloading etcd...")
             download(ETCD_DOWNLOAD_URI, ETCD_SRC_PATH)
         end
 
@@ -27,6 +28,8 @@ The `timeout` specifies a number of seconds to run the server for
 (using `timeout` or `gtimeout`).
 """
 function start(timeout=-1)
+    info(get_logger(current_module()), "Starting etcd server...")
+
     if !ispath(ETCD_DEST_PATH)
         install()
     end

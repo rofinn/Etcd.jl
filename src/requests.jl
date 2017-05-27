@@ -11,7 +11,7 @@ response(err::HTTPError) = err.resp
 
 function Base.showerror(io::IO, err::HTTPError)
     msg = readstring(err.resp)
-    println(io, "HTTPError: $msg")
+    print(io, "HTTPError: $msg")
 end
 
 """
@@ -28,7 +28,7 @@ response(err::EtcdError) = err.resp
 function Base.showerror(io::IO, err::EtcdError)
     err_code = err.resp["errorCode"]
     msg = get(err.resp, "message", "Unknown error")
-    println(io, "EtcdError: $msg ($err_code).")
+    print(io, "EtcdError: $msg ($err_code).")
 end
 
 """
@@ -55,6 +55,8 @@ For failed HTTP or etcd requests an `HTTPError` or `EtcdError` is thrown respect
 - `String`: all non-json response bodies
 """
 function request(f::Function, uri::String, opts::Dict; n=5, max_delay=10.0)
+    logger = get_logger(current_module())
+
     retry_cond(resp) = in(statuscode(resp), 300:400) && haskey(resp.headers, "Location")
     retry_func() = isempty(opts) ? f(uri) : f(uri; query=opts)
 
@@ -69,6 +71,8 @@ function request(f::Function, uri::String, opts::Dict; n=5, max_delay=10.0)
         )()
     end
 
+    debug(logger, readstring(resp))
+
     data = try
         Requests.json(resp)
     catch _
@@ -76,9 +80,9 @@ function request(f::Function, uri::String, opts::Dict; n=5, max_delay=10.0)
     end
 
     if isa(data, Dict) && Base.haskey(data, "errorCode")
-        throw(EtcdError(data))
+        error(logger, EtcdError(data))
     elseif statuscode(resp) >= 400
-        throw(HTTPError(resp))
+        error(logger, HTTPError(resp))
     end
 
     return data

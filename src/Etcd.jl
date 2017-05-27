@@ -1,6 +1,8 @@
 module Etcd
 
 using Requests
+using Memento
+
 import HttpCommon: Response
 
 immutable Client

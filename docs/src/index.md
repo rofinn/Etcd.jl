@@ -209,3 +209,18 @@ or a list of members with:
 ```julia
 julia> members(etcd)
 ```
+
+#### Logging
+
+To aid development and debugging Etcd supports [Memento](https://github.com/invenia/Memento.jl) logging of HTTP response bodies.
+
+To get etcd HTTP debug logs run:
+```julia
+julia> using Memento
+
+julia> Memento.config("debug"; fmt="[{level}] {msg}")
+Logger(root)
+
+julia> set(cli, "/foo/bar", "Hello World")
+[debug] {"action":"set","node":{"key":"/foo/bar","value":"Hello World","modifiedIndex":4,"createdIndex":4}}
+```

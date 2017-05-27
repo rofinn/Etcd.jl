@@ -1,7 +1,12 @@
 using Base.Test
 using Etcd
+using Memento
 
-info("Starting etcd server...")
+const LOG_LEVEL = "info"      # could also be "debug", "notice", "warn", etc
+
+Memento.config(LOG_LEVEL; fmt="[{level}] {msg}")
+const logger = get_logger(current_module())
+
 # const timeout = 600     # A longer timeout for travis testing
 const timeout = 60    # More reasonable local timeout
 const server = Etcd.start(timeout)  # Start server with timeout of 60 sec
@@ -302,5 +307,5 @@ const version = "v2"
 end
 
 sleep(5)
-info("Stopping etcd server...")
+info(logger, "Stopping etcd server...")
 kill(server)
