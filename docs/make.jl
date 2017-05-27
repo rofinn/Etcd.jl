@@ -15,7 +15,7 @@ makedocs(
 )
 
 deploydocs(
-    repo   = "github.com/invenia/Memento.jl.git",
+    repo   = "github.com/rofinn/Etcd.jl.git",
     julia  = "0.5",
     target = "build",
     deps = nothing,
