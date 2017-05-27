@@ -3,8 +3,8 @@
 
 Creates an asynchronous `Task` which watches the `key` on the etcd cluster and runs
 function `f` on the response.
-
-Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#waiting-for-a-change
+See the [etcd API](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#waiting-for-a-change)
+for more details.
 """
 function watch(f::Function, cli::Client, key::String; wait_index::Int=-1, recursive::Bool=false)
     t = @async begin
@@ -31,8 +31,8 @@ end
 Creates an asynchrous `Task` which continously watches the `key` on the etcd cluster and
 runs function `f` on the response.
 The predicate function `p` represents a termination condition to exit the loop.
-
-Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#waiting-for-a-change
+See the [etcd API](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#waiting-for-a-change)
+for more details.
 """
 function watchloop(
     f::Function, cli::Client, key::String, p::Function=(resp) -> false;

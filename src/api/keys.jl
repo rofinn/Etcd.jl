@@ -5,9 +5,9 @@ end
 """
     get(cli, key, sort=false, recursive=false) -> Dict
 
-Fetches a value from the specified `key` from the etcd cluster.
-
-Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#get-the-value-of-a-key
+Fetches the value for the specified `key` from the etcd cluster.
+See the [etcd API](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#get-the-value-of-a-key)
+for more details.
 """
 function Base.get(cli::Client, key::String; sort::Bool=false, recursive::Bool=false)
     return get(cli, key, Dict{String, Any}(); sort=sort, recursive=recursive)
@@ -44,8 +44,8 @@ end
     set(cli, key, value; ttl=-1, ordered=false) -> Dict
 
 Sets the `value` for the specified `key` in the etcd cluster.
-
-Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#changing-the-value-of-a-key
+See the [etcd API](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#changing-the-value-of-a-key)
+for more details.
 """
 function set(cli::Client, key::String, value::String; ttl::Int=-1, ordered=false)
     opts = Dict{String, Any}("value" => value)
@@ -151,8 +151,8 @@ end
     cad(cli, key; prev_value=nothing, prev_index=-1) -> Dict
 
 Performs an atomic compare-and-delete on the `key` in the etcd cluster.
-
-Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#atomic-compare-and-delete
+See the [etcd API](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#atomic-compare-and-delete)
+for more details.
 """
 function cad(
     cli::Client, key::String;
@@ -174,8 +174,8 @@ end
     cas(cli, key, value; prev_value=nothing, prev_index=-1, ttl=-1) -> Dict
 
 Performs an atomic compare-and-swap with the `key` and `value` on the etcd cluster.
-
-Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#atomic-compare-and-swap
+See the [etcd API](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#atomic-compare-and-swap)
+for more details.
 """
 function cas(
     cli::Client, key::String, value::String;

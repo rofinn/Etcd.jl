@@ -4,8 +4,8 @@ leaderuri(cli::Client) = "http://$(cli.host):$(cli.port)/$(cli.version)/stats/le
     leader(cli) -> Dict
 
 Fetchers the stats for the leader of the etcd cluster.
-
-Reference: https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#leader-statistics
+See the [etcd API](https://github.com/coreos/etcd/blob/master/Documentation/v2/api.md#leader-statistics)
+for more details.
 """
 function leader(cli::Client)
     leader_id = request(Requests.get, leaderuri(cli), Dict())["leader"]
