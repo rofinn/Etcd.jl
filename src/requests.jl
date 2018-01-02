@@ -55,21 +55,16 @@ For failed HTTP or etcd requests an `HTTPError` or `EtcdError` is thrown respect
 - `String`: all non-json response bodies
 """
 function request(f::Function, uri::String, opts::Dict; n=5, max_delay=10.0)
-    logger = get_logger(current_module())
+    logger = getlogger(current_module())
 
-    retry_cond(resp) = in(statuscode(resp), 300:400) && haskey(resp.headers, "Location")
+    retry_cond(state, resp) = (state, isa(resp, Response) && in(statuscode(resp), 300:400) && haskey(resp.headers, "Location"))
     retry_func() = isempty(opts) ? f(uri) : f(uri; query=opts)
 
-
-    resp = @static if VERSION < v"0.6.0-dev.2042"
-        retry(retry_func, retry_cond; n=n, max_delay=max_delay)()
-    else
-        retry(
+    resp = retry(
             retry_func;
             delays=Base.ExponentialBackOff(n=n, max_delay=max_delay),
             check=retry_cond
         )()
-    end
 
     debug(logger, readstring(resp))
 

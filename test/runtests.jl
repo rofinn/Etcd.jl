@@ -43,7 +43,7 @@ const version = "v2"
         @testset "machines" begin
             resp = machines(cli)
             @test isa(resp, AbstractArray)
-            @test length(resp) == 2
+            @test length(resp) >= 1
             @test contains(resp[1], host)
             @test contains(resp[1], "$port")
         end
