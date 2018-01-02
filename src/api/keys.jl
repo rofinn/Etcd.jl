@@ -135,7 +135,7 @@ Base.haskey(cli::Client, key::String) = exists(cli, key)
 
 Removes the `key` from the etcd cluster.
 """
-delete(cli::Client, key::String) = delete(cli, key, Dict())
+delete(cli::Client, key::String) = delete(cli, key, Dict{String,Any}())
 
 """
     deletedir(cli, key; recursive=false) -> Dict
