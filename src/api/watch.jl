@@ -18,7 +18,7 @@ function watch(f::Function, cli::Client, key::String; wait_index::Int=-1, recurs
             opts["waitIndex"] = wait_index
         end
 
-        resp = get(cli, key, opts)
+        resp = get(cli, key, opts; recursive=recursive)
         f(resp)
     end
 
@@ -50,7 +50,7 @@ function watchloop(
                 opts["waitIndex"] = wait_index
             end
 
-            resp = get(cli, key, opts)
+            resp = get(cli, key, opts; recursive=recursive)
             f(resp)
 
             if p(resp)
