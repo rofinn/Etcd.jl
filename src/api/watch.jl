@@ -57,6 +57,13 @@ function watchloop(
                 break
             end
 
+            # reset wait_index to modified index of the response
+            # - to avoid duplicates when the etcd index is incremented by updates elsewhere (outside the watched path)
+            # - and missed updates when wait_index was not initially supplied (for ones that happen between calls to `get`)
+            if ("node" in keys(resp)) && ("modifiedIndex" in keys(resp["node"]))
+                wait_index = resp["node"]["modifiedIndex"]
+            end
+
             if wait_index > 0
                 wait_index += 1
             end
