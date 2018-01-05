@@ -5,7 +5,7 @@ using Memento
 const LOG_LEVEL = "info"      # could also be "debug", "notice", "warn", etc
 
 Memento.config(LOG_LEVEL; fmt="[{level}] {msg}")
-const logger = get_logger(current_module())
+const logger = getlogger(current_module())
 
 # const timeout = 600     # A longer timeout for travis testing
 const timeout = 60    # More reasonable local timeout
@@ -280,7 +280,7 @@ const version = "v2"
                         c = Channel{Dict}(32)
                         set_resp = set(cli, "/mykey", "val1"; ttl=2)
                         idx = set_resp["node"]["modifiedIndex"] + 1
-                        predicate(r) = r["node"]["modifiedIndex"] > 5
+                        predicate(r) = r["node"]["modifiedIndex"] > (idx + 5)
 
                         t = watchloop(cli, "/mykey", predicate; wait_index=idx, recursive=true) do resp
                             put!(c, resp)
