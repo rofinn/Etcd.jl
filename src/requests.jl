@@ -28,7 +28,9 @@ response(err::EtcdError) = err.resp
 function Base.showerror(io::IO, err::EtcdError)
     err_code = err.resp["errorCode"]
     msg = get(err.resp, "message", "Unknown error")
-    print(io, "EtcdError: $msg ($err_code).")
+    cause = get(err.resp, "cause", "")
+    isempty(cause) || (cause = " - $cause")
+    print(io, "EtcdError: $(msg)$(cause) ($err_code).")
 end
 
 """
