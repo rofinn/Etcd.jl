@@ -32,7 +32,7 @@ const version = "v2"
             catch err
                 @test isa(Etcd.response(err), Dict)
                 show_out = sprint(showerror, err)
-                @test startswith(show_out, "EtcdError: Key already exists (105).")
+                @test startswith(show_out, "EtcdError: Key already exists - /mykey (105).")
             end
 
             sleep(2)
